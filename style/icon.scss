@@ -1,0 +1,104 @@
+@import './function.scss';
+
+$icon-width: rem(45);
+$icon-height: rem(45);
+
+$icon-60-size: rem(60);
+$icon-30-size: rem(30);
+$icon-20-size: rem(20);
+
+.icon{
+  display: inline-block;
+  width: $icon-width;
+  height: $icon-height;
+  background-size: $icon-width $icon-height;
+  background-repeat: no-repeat;
+  background-position: left center;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &.icon_record {
+    background-image: url("../../assets/icon/record.png");
+  }
+  &.icon_record_active {
+    background-image: url("../../assets/icon/record_active.png");
+  }
+  &.icon_polling {
+    background-image: url("../../assets/icon/polling.png");
+  }
+  &.icon_polling_active {
+    background-image: url("../../assets/icon/polling_active.png");
+  }
+  &.icon_wecord {
+    background-image: url("../../assets/icon/wecord.png");
+  }
+  &.icon_wecord_active {
+    background-image: url("../../assets/icon/wecord_active.png");
+  }
+  &.icon_weight {
+    background-image: url("../../assets/icon/weight.png");
+  }
+  &.icon_weight_active {
+    background-image: url("../../assets/icon/weight_active.png");
+  }
+  &.icon_bad {
+    background-image: url("../../assets/icon/bad.png");
+  }
+  &.icon_bad_active {
+    background-image: url("../../assets/icon/bad_active.png");
+  }
+  &.icon_soso {
+    background-image: url("../../assets/icon/soso.png");
+  }
+  &.icon_soso_active {
+    background-image: url("../../assets/icon/soso_active.png");
+  }
+  &.icon_good {
+    background-image: url("../../assets/icon/good.png");
+  }
+  &.icon_good_active {
+    background-image: url("../../assets/icon/good_active.png");
+  }
+  &.icon_awful {
+    background-image: url("../../assets/icon/awful.png");
+  }
+  &.icon_awful_active {
+    background-image: url("../../assets/icon/awful_active.png");
+  }
+
+  &.icon_camera {
+    background-image: url("../../assets/icon/camera.png");
+  }
+
+  &.icon_close {
+    background-image: url("../../assets/icon/close.png");
+  }
+
+  &.icon_spinner {
+    background-image: url("../../assets/icon/spinner.gif");
+  }
+
+  &.icon_dropdown {
+    background-image: url("../../assets/icon/dropdown.png");
+  }
+
+  &.icon-60{
+    width: $icon-60-size;
+    height: $icon-60-size;
+    background-size: $icon-60-size $icon-60-size;
+  }
+
+  &.icon-30{
+    width: $icon-30-size;
+    height: $icon-30-size;
+    background-size: $icon-30-size $icon-30-size;
+  }
+
+  &.icon-20{
+    width: $icon-20-size;
+    height: $icon-20-size;
+    background-size: $icon-20-size $icon-20-size;
+  }
+}

@@ -1,0 +1,85 @@
+@import './function.scss';
+
+@import url('https://fonts.googleapis.com/css?family=Lato|Lora');
+
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.purple-blue {
+  color: #5677d0;
+}
+.b--purple-blue{
+  border-color: #5677d0;
+}
+
+.pv012{
+  padding-top: rem(12);
+  padding-bottom: rem(12);
+}
+
+.bg-n-white{
+  background: #fafafc;
+}
+
+.hide{
+  visibility: hidden;
+}
+
+.trt-half{
+  transform: translateY(-50%);
+}
+
+.trr-half{
+  transform: translateX(50%);
+}
+
+.monospace{
+  font-family: monospace;
+}
+
+.bg-purple-blue{
+  background-color: #5677d0;
+}
+
+.bw05{
+  border-width: 0.5px;
+}
+
+.semantic-input{
+  font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+  margin: 0;
+  outline: 0;
+  margin-bottom: rem(16);
+  -webkit-appearance: none;
+  tap-highlight-color: rgba(255,255,255,0);
+  line-height: 1.21428571em;
+  padding: .67857143em 1em;
+  font-size: 1em;
+  background: #fff;
+  border: 1px solid rgba(34,36,38,.15);
+  color: rgba(0,0,0,.87);
+  border-radius: .28571429rem;
+  -webkit-box-shadow: 0 0 0 0 transparent inset;
+  box-shadow: 0 0 0 0 transparent inset;
+  -webkit-transition: color .1s ease,border-color .1s ease;
+  transition: color .1s ease,border-color .1s ease;
+}
+
+.semantic-input.br0.mb0{
+  border-radius: 0rem;
+  margin-bottom: 0;
+  border-top: none;
+}
+
+.top100{
+  top: 102%
+}
+
+.z-100{
+  z-index: 100;
+}
+
+.disabled{
+  opacity: 0.7;
+  pointer-events: none;
+}
