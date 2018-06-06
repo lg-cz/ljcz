@@ -22,7 +22,7 @@ module.exports = {
   },
 
   postData (data, resolve, reject) {
-    fetch(url('collector', JSON.stringify({id : data.id })))
+    fetch(url('collector', JSON.stringify({id : data.collectorId })))
     .then(res => res.json())
     .then(datas => {
       var collector = datas[0]
@@ -31,12 +31,12 @@ module.exports = {
       var arr = [ 'battery', 'bottle', 'bag', 'bulb' ]
 
       arr.forEach(o => {
-        if (collector[o]=== void 0) {
+        if (collector[o] === void 0) {
           collector[o] = 0
         }
         collector[o] += data[o]
       })
-
+      console.log(collector)
       return collector
     })
     .then(collector => {

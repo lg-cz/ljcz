@@ -1,25 +1,28 @@
 module.exports = (state, emitter) => {
-  const INIT_DATA = {
-    'rot': 0,
-    'unrot': 0,
+  const ENV_DATA = {
     'keyState': 'idle',
     'fetchState': 'banned',
-    'recycle': 0,
-    'harm': 0,
     'key': null,
     'villageId': null,
     'id': null,
-    'score': 3,
     'collectorId': null,
     'loading': true,
     'collectors': [],
+  }
+
+  const BUSS_DATA = {
+    'rot': 0,
+    'unrot': 0,
+    'recycle': 0,
+    'harm': 0,
     'battery': 0,
     'bottle': 0,
     'bag': 0,
-    'bulb': 0
+    'bulb': 0,
+    'score': 3
   }
 
-  Object.assign(state, INIT_DATA)
+  Object.assign(state, ENV_DATA, BUSS_DATA)
 
   emitter.on('state:battery', battery => {
     state.battery = battery
@@ -87,5 +90,13 @@ module.exports = (state, emitter) => {
 
   emitter.on('state:collectors', collectors => {
     state.collectors = collectors
+  })
+
+  emitter.on('state:init', () => {
+    Object.assign(state, ENV_DATA, BUSS_DATA)
+  })
+
+  emitter.on('state:buss_init', () => {
+    Object.assign(state, BUSS_DATA)
   })
 }

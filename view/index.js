@@ -9,6 +9,39 @@ var TITLE = '分类记录'
 
 module.exports = view
 
+class QLogout extends Nanocomponent {
+  constructor (state, emit) {
+    super()
+    this.state = state
+    this.emit = emit
+    this.handleClick = this.handleClick.bind(this)
+  }
+
+  createElement () {
+    return html`
+      <button
+        onclick=${this.handleClick}
+        class='fr bn bg-purple-blue h2 br2 white'>
+        退出
+      </button>
+    `
+  }
+
+  handleClick () {
+    localStorage.removeItem('ljcz:id')
+    localStorage.removeItem('ljcz:villageId')
+    localStorage.removeItem('ljcz:key')
+    amme.off('allow')
+    this.emit('state:init')
+    console.log(this.state.loading)
+    this.emit('render')
+  }
+
+  update () {
+    return true
+  }
+}
+
 class QDropdown extends Nanocomponent {
   constructor (state, emit) {
     super()
@@ -68,11 +101,15 @@ class QSubmit extends Nanocomponent {
     this.emit = emit
     this.submit = this.submit.bind(this)
     this.machineFn= this.machineFn.bind(this)
+    this.allow = this.allow.bind(this)
     this.machine = {
       banned: {
         ALLOW: 'idle'
       },
       idle: {
+        CLICK: 'loading'
+      },
+      goat: {
         CLICK: 'loading'
       },
       loading: {
@@ -87,10 +124,8 @@ class QSubmit extends Nanocomponent {
       idle: () => {},
       loading: this.loading.bind(this),
       goat: () => {
-        setTimeout(() => {
-          var win = window.open('', '_self')
-          win.close()
-        }, 1000)
+        this.emit('state:buss_init')
+        this.emit('render')
       },
       error: () => {}
     }
@@ -117,15 +152,22 @@ class QSubmit extends Nanocomponent {
     return this.machineFn('CLICK')
   }
 
+  allow () {
+    this.machineFn('ALLOW')()
+  }
+
   load () {
-    amme.on('allow', () => {
-      this.machineFn('ALLOW')()
-    })
+    amme.on('allow', this.allow)
+  }
+
+  unload () {
+    amme.off('allow', this.allow)
   }
 
   machineFn (action) {
     return () => {
       var nextState = this.transition(this.state.fetchState, action)
+
       if (!nextState) return
       this.emit('state:fetchState', nextState)
       this.command[nextState]()
@@ -303,6 +345,7 @@ class Component extends Nanocomponent {
     this.qScore = new QScore(state, emit)
     this.qkeySubmit = new QkeySubmit(state, emit)
     this.qSubmit = new QSubmit(state, emit)
+    this.qLogout = new QLogout(state, emit)
     this.qDropdown = new QDropdown(state, emit, this.qSubmit)
   }
 
@@ -333,6 +376,7 @@ class Component extends Nanocomponent {
               <section class='w-90'>
                 <p class='f5 navy'>
                   ${this.qSubmit.render()}
+                  ${this.qLogout.render()}
                 </p>
                 ${this.qDropdown.render()}
                 ${this.qScore.render()}
@@ -363,7 +407,7 @@ class Component extends Nanocomponent {
   }
 
   load () {
-    if (this.state.loading) {
+    if (this.state.loading && this.state.key) {
       var villageId = Number(this.state.villageId)
       getData('collector', JSON.stringify({ villageId }), datas => {
         this.emit('state:collectors', datas)
