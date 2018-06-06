@@ -12,10 +12,30 @@ module.exports = (state, emitter) => {
     'score': 3,
     'collectorId': null,
     'loading': true,
-    'collectors': []
+    'collectors': [],
+    'battery': 0,
+    'bottle': 0,
+    'bag': 0,
+    'bulb': 0
   }
 
   Object.assign(state, INIT_DATA)
+
+  emitter.on('state:battery', battery => {
+    state.battery = battery
+  })
+
+  emitter.on('state:bottle', bottle => {
+    state.bottle = bottle
+  })
+
+  emitter.on('state:bag', bag => {
+    state.bag = bag
+  })
+
+  emitter.on('state:bulb', bulb => {
+    state.bulb = bulb
+  })
 
   emitter.on('state:rot', rot => {
     state.rot = rot

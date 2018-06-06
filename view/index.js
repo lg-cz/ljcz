@@ -3,7 +3,7 @@ var css = require('sheetify')
 var Nanocomponent = require('choo/component')
 var mitt = require('mitt')
 var amme = mitt()
-const { postKey, getData } = require('../fetch')
+const { postKey, getData, postData } = require('../fetch')
 
 var TITLE = '分类记录'
 
@@ -134,19 +134,26 @@ class QSubmit extends Nanocomponent {
   }
 
   loading () {
-    // var data = {
-    //   id: Number(this.state.id),
-    //   villageId: Number(this.state.villageId),
-    //   score: this.state.score,
-    //   photo: this.state.photo,
-    //   date: new Date().getTime()
-    // }
-    //
-    // postData(data, () => {
-    //   this.machineFn('RESOLVE')()
-    // }, () => {
-    //   this.machineFn('REJECT')()
-    // })
+    var data = {
+      id: Number(this.state.id),
+      villageId: Number(this.state.villageId),
+      collectorId: Number(this.state.collectorId),
+      rot: this.state.rot,
+      unrot: this.state.unrot,
+      harm: this.state.harm,
+      recycle: this.state.recycle,
+      battery: this.state.battery,
+      bottle: this.state.bottle,
+      bag: this.state.bag,
+      bulb: this.state.bulb,
+      score: this.state.score
+    }
+
+    postData(data, () => {
+      this.machineFn('RESOLVE')()
+    }, () => {
+      this.machineFn('REJECT')()
+    })
   }
 
   transition (s, a) {
@@ -331,14 +338,14 @@ class Component extends Nanocomponent {
                 ${this.qScore.render()}
                 <p class='f4 purple-blue'>重量：</p>
                 <input onchange=${this.handleChange} name='rot' class='semantic-input db' type='number' placeholder='可腐烂垃圾 (kg)' />
-                <input name='unrot' class='semantic-input db' type='number' placeholder='不可腐烂垃圾 (kg)' />
-                <input name='recycle' class='semantic-input db' type='number' placeholder='可回收 (kg)' />
-                <input name='harm' class='semantic-input db' type='number' placeholder='有毒有害 (kg)' />
+                <input onchange=${this.handleChange} name='unrot' class='semantic-input db' type='number' placeholder='不可腐烂垃圾 (kg)' />
+                <input onchange=${this.handleChange} name='recycle' class='semantic-input db' type='number' placeholder='可回收 (kg)' />
+                <input onchange=${this.handleChange} name='harm' class='semantic-input db' type='number' placeholder='有毒有害 (kg)' />
                 <p class='f4 purple-blue'>有毒有害垃圾个数：</p>
-                <input class='semantic-input db' type='number' placeholder='电池 (个)' />
-                <input class='semantic-input db' type='number' placeholder='节能灯泡 (个)' />
-                <input class='semantic-input db' type='number' placeholder='农药瓶 (个)' />
-                <input class='semantic-input db' type='number' placeholder='农药袋 (个)' />
+                <input onchange=${this.handleChange} name='battery' class='semantic-input db' type='number' placeholder='电池 (个)' />
+                <input onchange=${this.handleChange} name='bulb' class='semantic-input db' type='number' placeholder='节能灯泡 (个)' />
+                <input onchange=${this.handleChange} name='bottle' class='semantic-input db' type='number' placeholder='农药瓶 (个)' />
+                <input onchange=${this.handleChange} name='bag' class='semantic-input db' type='number' placeholder='农药袋 (个)' />
               </section>
             `
           ) :
@@ -374,7 +381,7 @@ class Component extends Nanocomponent {
     if (!isNaN(e.target.value)) {
       num = Number(e.target.value)
     }
-    
+
     this.emit(`state:${e.target.name}`, num)
   }
 

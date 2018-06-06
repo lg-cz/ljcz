@@ -19,6 +19,64 @@ module.exports = {
     .then(res => res.json())
     .then(resolve)
     .catch(reject)
+  },
+
+  postData (data, resolve, reject) {
+    fetch(url('collector', JSON.stringify({id : data.id })))
+    .then(res => res.json())
+    .then(datas => {
+      var collector = datas[0]
+      collector[`score${data.score}`]++
+
+      var arr = [ 'battery', 'bottle', 'bag', 'bulb' ]
+
+      arr.forEach(o => {
+        if (collector[o]=== void 0) {
+          collector[o] = 0
+        }
+        collector[o] += data[o]
+      })
+
+      return collector
+    })
+    .then(collector => {
+      return fetch(url('collector'), {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(collector)
+      })
+    })
+    .then(() => {
+      return fetch(url('village', JSON.stringify({id : data.villageId })))
+    })
+    .then(res => res.json())
+    .then(datas => {
+      var village = datas[0]
+
+      var arr = [ 'rot', 'unrot', 'recycle', 'harm' ]
+
+      arr.forEach(o => {
+        if (village[o]=== void 0) {
+          village[o] = 0
+        }
+        village[o] += data[o]
+      })
+
+      return village
+    })
+    .then(village => {
+      return fetch(url('village'), {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(village)
+      })
+    })
+    .then(resolve)
+    .catch(reject)
   }
 }
 
