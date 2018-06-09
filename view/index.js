@@ -33,7 +33,6 @@ class QLogout extends Nanocomponent {
     localStorage.removeItem('ljcz:key')
     amme.off('allow')
     this.emit('state:init')
-    console.log(this.state.loading)
     this.emit('render')
   }
 
