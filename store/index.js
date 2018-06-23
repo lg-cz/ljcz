@@ -19,7 +19,9 @@ module.exports = (state, emitter) => {
     'bottle': 0,
     'bag': 0,
     'bulb': 0,
-    'score': 3
+    'score': 3,
+    'drate': 0,
+    'lastUpdate': null
   }
 
   Object.assign(state, ENV_DATA, BUSS_DATA)
@@ -92,11 +94,19 @@ module.exports = (state, emitter) => {
     state.collectors = collectors
   })
 
+  emitter.on('state:lastUpdate', lastUpdate => {
+    state.lastUpdate = lastUpdate
+  })
+
   emitter.on('state:init', () => {
     Object.assign(state, ENV_DATA, BUSS_DATA)
   })
 
   emitter.on('state:buss_init', () => {
     Object.assign(state, BUSS_DATA)
+  })
+
+  emitter.on('state:drate', drate => {
+    state.drate = drate
   })
 }

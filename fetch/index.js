@@ -36,7 +36,11 @@ module.exports = {
         }
         collector[o] += data[o]
       })
-      console.log(collector)
+      
+      var d = new Date()
+
+      collector.lastUpdate = d.getTime()
+
       return collector
     })
     .then(collector => {

@@ -5,7 +5,7 @@ var mitt = require('mitt')
 var amme = mitt()
 const { postKey, getData, postData } = require('../fetch')
 
-var TITLE = '分类记录'
+var TITLE = '称重记录'
 
 module.exports = view
 
@@ -78,7 +78,7 @@ class QDropdown extends Nanocomponent {
       this.isShow = false
       amme.emit('allow')
       this.emit('state:collectorId', data.id)
-
+      this.emit('state:lastUpdate', data.lastUpdate)
       this.render()
     }
   }
@@ -94,13 +94,14 @@ class QDropdown extends Nanocomponent {
 }
 
 class QSubmit extends Nanocomponent {
-  constructor (state, emit) {
+  constructor (state, emit, qRate) {
     super()
     this.state = state
     this.emit = emit
     this.submit = this.submit.bind(this)
     this.machineFn= this.machineFn.bind(this)
     this.allow = this.allow.bind(this)
+    this.qRate = qRate
     this.machine = {
       banned: {
         ALLOW: 'idle'
@@ -113,9 +114,13 @@ class QSubmit extends Nanocomponent {
       },
       loading: {
         RESOLVE: 'goat',
-        REJECT: 'error'
+        REJECT: 'error',
+        DUPLICATION: 'duplication'
       },
       error: {
+        CLICK: 'loading'
+      },
+      duplication: {
         CLICK: 'loading'
       }
     }
@@ -126,14 +131,16 @@ class QSubmit extends Nanocomponent {
         this.emit('state:buss_init')
         this.emit('render')
       },
-      error: () => {}
+      error: () => {},
+      duplication: () => {}
     }
     this.text = {
       banned: '提交',
       idle: '提交',
       loading: '提交中...',
       goat: '提交成功',
-      error: '网络错误'
+      error: '网络错误',
+      duplication: '重复提交'
     }
   }
 
@@ -189,6 +196,20 @@ class QSubmit extends Nanocomponent {
       bulb: this.state.bulb,
       score: this.state.score
     }
+
+    var midnight = new Date()
+
+    midnight.setHours(0,0,0,0)
+
+    if (this.state.lastUpdate && this.state.lastUpdate > midnight.getTime()) {
+      this.machineFn('DUPLICATION')()
+      return
+    }
+
+    var t = this.state.rot + this.state.unrot + this.state.harm + this.state.recycle
+    var percent = ((this.state.rot + this.state.harm + this.state.recycle)/t  * 100).toFixed(1) + '%'
+    this.emit('state:drate', percent)
+    this.qRate.render()
 
     postData(data, () => {
       this.machineFn('RESOLVE')()
@@ -333,6 +354,24 @@ class QScore extends Nanocomponent {
   }
 }
 
+class QRate extends Nanocomponent {
+  constructor (state, emit) {
+    super()
+    this.state = state
+    this.emit = emit
+  }
+
+  createElement () {
+    return html`
+      <p class='f4 purple-blue'>重量：<span class='fr'>减量率: <b class='black'>${this.state.drate}</b></span></p>
+    `
+  }
+
+  update () {
+    return true
+  }
+}
+
 class Component extends Nanocomponent {
   constructor (state, emit) {
     super()
@@ -341,9 +380,10 @@ class Component extends Nanocomponent {
     this.state = state
     this.emit = emit
     this.handleChange = this.handleChange.bind(this)
+    this.qRate = new QRate(state, emit)
     this.qScore = new QScore(state, emit)
     this.qkeySubmit = new QkeySubmit(state, emit)
-    this.qSubmit = new QSubmit(state, emit)
+    this.qSubmit = new QSubmit(state, emit, this.qRate)
     this.qLogout = new QLogout(state, emit)
     this.qDropdown = new QDropdown(state, emit, this.qSubmit)
   }
@@ -379,7 +419,7 @@ class Component extends Nanocomponent {
                 </p>
                 ${this.qDropdown.render()}
                 ${this.qScore.render()}
-                <p class='f4 purple-blue'>重量：</p>
+                ${this.qRate.render()}
                 <input onchange=${this.handleChange} name='rot' class='semantic-input db' type='number' placeholder='可腐烂垃圾 (kg)' />
                 <input onchange=${this.handleChange} name='unrot' class='semantic-input db' type='number' placeholder='不可腐烂垃圾 (kg)' />
                 <input onchange=${this.handleChange} name='recycle' class='semantic-input db' type='number' placeholder='可回收 (kg)' />
@@ -389,6 +429,7 @@ class Component extends Nanocomponent {
                 <input onchange=${this.handleChange} name='bulb' class='semantic-input db' type='number' placeholder='节能灯泡 (个)' />
                 <input onchange=${this.handleChange} name='bottle' class='semantic-input db' type='number' placeholder='农药瓶 (个)' />
                 <input onchange=${this.handleChange} name='bag' class='semantic-input db' type='number' placeholder='农药袋 (个)' />
+                <p class='w-100'><a href='https://lg-xjjg.github.io/' class='no-underline f3 pt4 pb4'>统计结果</a></p>
               </section>
             `
           ) :
