@@ -128,8 +128,10 @@ class QSubmit extends Nanocomponent {
       idle: () => {},
       loading: this.loading.bind(this),
       goat: () => {
-        this.emit('state:buss_init')
-        this.emit('render')
+        // this.emit('state:buss_init')
+        // this.emit('render')
+        var now = new Date()
+        this.emit('state:lastUpdate', now.getTime())
       },
       error: () => {},
       duplication: () => {}
@@ -429,7 +431,7 @@ class Component extends Nanocomponent {
                 <input onchange=${this.handleChange} name='bulb' class='semantic-input db' type='number' placeholder='节能灯泡 (个)' />
                 <input onchange=${this.handleChange} name='bottle' class='semantic-input db' type='number' placeholder='农药瓶 (个)' />
                 <input onchange=${this.handleChange} name='bag' class='semantic-input db' type='number' placeholder='农药袋 (个)' />
-                <p class='w-100'><a href='https://lg-xjjg.github.io/' class='no-underline f3 pt4 pb4'>统计结果</a></p>
+                <p class='w-100'><a href='https://lg-xjjg.github.io/' class='f3 pt4 pb4'>统计结果</a></p>
               </section>
             `
           ) :
