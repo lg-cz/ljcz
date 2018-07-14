@@ -41,13 +41,71 @@ class QLogout extends Nanocomponent {
   }
 }
 
-class QDropdown extends Nanocomponent {
+class QDropdown2 extends Nanocomponent {
   constructor (state, emit) {
     super()
     this.state = state
     this.emit = emit
     this.handleClick = this.handleClick.bind(this)
     this.clickList = this.clickList.bind(this)
+    this.name = '村庄'
+  }
+
+  createElement () {
+    if (this.state.villages.length) {
+      return html`
+        <div
+          class="w-60 relative">
+          <div
+            onclick=${this.handleClick}
+            class="flex items-center semantic-input w-100 justify-between">
+            <span class="dib">${this.name}</span>
+            <i class="icon icon-20 icon_dropdown dib"></i>
+          </div>
+          <ul class='mt0 w-100 pa0 list absolute top100 left-0 z-100 ${this.isShow ? "": "hide"}'>
+            ${this.state.villages.map(d => html`
+              <li
+                onclick=${this.clickList(d)}
+                class='w-100 semantic-input br0 mb0'>${d.name}</li>
+            `)}
+          </ul>
+        </div>
+      `
+    } else {
+      return html`<div class="w-60 relative"></div>`
+    }
+
+  }
+
+  clickList (data) {
+    return e => {
+      this.name = data.name
+      this.isShow = false
+      amme.emit('allow')
+      this.emit('state:vId', data.id)
+      this.emit('state:lastUpdate', data.lastUpdate)
+      this.render()
+    }
+  }
+
+  handleClick () {
+    this.isShow = !this.isShow
+    this.render()
+  }
+
+  update () {
+    return true
+  }
+}
+
+class QDropdown extends Nanocomponent {
+  constructor (state, emit, qDropdown2) {
+    super()
+    this.state = state
+    this.emit = emit
+    this.handleClick = this.handleClick.bind(this)
+    this.clickList = this.clickList.bind(this)
+    this.qDropdown2 = qDropdown2
     this.name = '收运员'
   }
 
@@ -76,10 +134,18 @@ class QDropdown extends Nanocomponent {
     return e => {
       this.name = data.name
       this.isShow = false
-      amme.emit('allow')
       this.emit('state:collectorId', data.id)
-      this.emit('state:lastUpdate', data.lastUpdate)
-      this.render()
+      
+      getData('village', JSON.stringify({
+        id: { $in: this.state.villageId }
+      }), datas => {
+        this.emit('state:villages', datas)
+        this.render()
+        this.qDropdown2.render()
+      }, err => {
+        console.log(err)
+      })
+
     }
   }
 
@@ -186,7 +252,7 @@ class QSubmit extends Nanocomponent {
   loading () {
     var data = {
       id: Number(this.state.id),
-      villageId: Number(this.state.villageId),
+      villageId: Number(this.state.vId),
       collectorId: Number(this.state.collectorId),
       rot: this.state.rot,
       unrot: this.state.unrot,
@@ -198,7 +264,7 @@ class QSubmit extends Nanocomponent {
       bulb: this.state.bulb,
       score: this.state.score
     }
-
+    console.log(data)
     var midnight = new Date()
 
     midnight.setHours(0,0,0,0)
@@ -269,6 +335,9 @@ class QkeySubmit extends Nanocomponent {
     postKey(JSON.stringify({ key }), (datas) => {
       if (datas.length) {
         var data = datas[0]
+
+        data.villageId = typeof data.villageId === 'object' ? data.villageId : [data.villageId]
+
         this.emit('state:id', data.id)
         this.emit('state:villageId', data.villageId)
         this.emit('state:key', data.key)
@@ -387,7 +456,8 @@ class Component extends Nanocomponent {
     this.qkeySubmit = new QkeySubmit(state, emit)
     this.qSubmit = new QSubmit(state, emit, this.qRate)
     this.qLogout = new QLogout(state, emit)
-    this.qDropdown = new QDropdown(state, emit, this.qSubmit)
+    this.qDropdown2 = new QDropdown2(state, emit)
+    this.qDropdown = new QDropdown(state, emit, this.qDropdown2)    
   }
 
   createElement () {
@@ -395,7 +465,7 @@ class Component extends Nanocomponent {
 
     if (localStorage.getItem('ljcz:id')) {
       this.emit('state:id', localStorage.getItem('ljcz:id'))
-      this.emit('state:villageId', localStorage.getItem('ljcz:villageId'))
+      this.emit('state:villageId', JSON.parse('[' + localStorage.getItem('ljcz:villageId') + ']'))
       this.emit('state:key', localStorage.getItem('ljcz:key'))
     }
 
@@ -420,6 +490,7 @@ class Component extends Nanocomponent {
                   ${this.qLogout.render()}
                 </p>
                 ${this.qDropdown.render()}
+                ${this.qDropdown2.render()}
                 ${this.qScore.render()}
                 ${this.qRate.render()}
                 <input onchange=${this.handleChange} name='rot' class='semantic-input db' type='number' placeholder='可腐烂垃圾 (kg)' />
@@ -450,8 +521,11 @@ class Component extends Nanocomponent {
 
   load () {
     if (this.state.loading && this.state.key) {
-      var villageId = Number(this.state.villageId)
-      getData('collector', JSON.stringify({ villageId }), datas => {
+      var villageId = JSON.parse('[' + this.state.villageId + ']')
+      
+      getData('collector', JSON.stringify({ 
+        villageId: { $in: villageId }
+      }), datas => {
         this.emit('state:collectors', datas)
         this.emit('state:loading', false)
         this.emit('render')

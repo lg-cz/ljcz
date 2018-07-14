@@ -4,10 +4,12 @@ module.exports = (state, emitter) => {
     'fetchState': 'banned',
     'key': null,
     'villageId': null,
+    'vId': null,
     'id': null,
+    'villages': [],
     'collectorId': null,
     'loading': true,
-    'collectors': [],
+    'collectors': []
   }
 
   const BUSS_DATA = {
@@ -62,12 +64,20 @@ module.exports = (state, emitter) => {
     state.id = id
   })
 
+  emitter.on('state:villages', villages => {
+    state.villages = villages
+  })
+
   emitter.on('state:score', score => {
     state.score = score
   })
 
   emitter.on('state:villageId', villageId => {
     state.villageId = villageId
+  })
+
+  emitter.on('state:vId', vId => {
+    state.vId = vId
   })
 
   emitter.on('state:key', key => {

@@ -33,8 +33,9 @@ module.exports = {
       arr.forEach(o => {
         if (collector[o] === void 0) {
           collector[o] = 0
-        }
-        collector[o] += data[o]
+        } else {
+          collector[o] += data[o]
+        }        
       })
       
       var d = new Date()
@@ -58,7 +59,8 @@ module.exports = {
     .then(res => res.json())
     .then(datas => {
       var village = datas[0]
-
+      var d = new Date()
+      village.lastUpdate = d.getTime()
       var arr = [ 'rot', 'unrot', 'recycle', 'harm' ]
 
       arr.forEach(o => {
