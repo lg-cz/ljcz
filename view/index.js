@@ -21,7 +21,7 @@ class QLogout extends Nanocomponent {
     return html`
       <button
         onclick=${this.handleClick}
-        class='fr bn bg-purple-blue h2 br2 white'>
+        class='bn bg-purple-blue h2 br2 white mt5'>
         退出
       </button>
     `
@@ -194,8 +194,6 @@ class QSubmit extends Nanocomponent {
       idle: () => {},
       loading: this.loading.bind(this),
       goat: () => {
-        // this.emit('state:buss_init')
-        // this.emit('render')
         var now = new Date()
         this.emit('state:lastUpdate', now.getTime())
       },
@@ -264,7 +262,7 @@ class QSubmit extends Nanocomponent {
       bulb: this.state.bulb,
       score: this.state.score
     }
-    console.log(data)
+
     var midnight = new Date()
 
     midnight.setHours(0,0,0,0)
@@ -486,8 +484,7 @@ class Component extends Nanocomponent {
             html`
               <section class='w-90'>
                 <p class='f5 navy'>
-                  ${this.qSubmit.render()}
-                  ${this.qLogout.render()}
+                  ${this.qSubmit.render()}                  
                 </p>
                 ${this.qDropdown.render()}
                 ${this.qDropdown2.render()}
@@ -496,13 +493,9 @@ class Component extends Nanocomponent {
                 <input onchange=${this.handleChange} name='rot' class='semantic-input db' type='number' placeholder='可腐烂垃圾 (kg)' />
                 <input onchange=${this.handleChange} name='unrot' class='semantic-input db' type='number' placeholder='不可腐烂垃圾 (kg)' />
                 <input onchange=${this.handleChange} name='recycle' class='semantic-input db' type='number' placeholder='可回收 (kg)' />
-                <input onchange=${this.handleChange} name='harm' class='semantic-input db' type='number' placeholder='有毒有害 (kg)' />
-                <p class='f4 purple-blue'>有毒有害垃圾个数：</p>
-                <input onchange=${this.handleChange} name='battery' class='semantic-input db' type='number' placeholder='电池 (个)' />
-                <input onchange=${this.handleChange} name='bulb' class='semantic-input db' type='number' placeholder='节能灯泡 (个)' />
-                <input onchange=${this.handleChange} name='bottle' class='semantic-input db' type='number' placeholder='农药瓶 (个)' />
-                <input onchange=${this.handleChange} name='bag' class='semantic-input db' type='number' placeholder='农药袋 (个)' />
+                <input onchange=${this.handleChange} name='harm' class='semantic-input db' type='number' placeholder='有毒有害 (kg)' />                
                 <p class='w-100'><a href='https://lg-xjjg.github.io/' class='f3 pt4 pb4'>统计结果</a></p>
+                ${this.qLogout.render()}
               </section>
             `
           ) :
