@@ -82,8 +82,17 @@ class QDropdown2 extends Nanocomponent {
       this.name = data.name
       this.isShow = false
       amme.emit('allow')
-      this.emit('state:vId', data.id)
-      this.emit('state:lastUpdate', data.lastUpdate)
+      this.emit('state:vId', Number(data.id))
+      var collector = this.state.collectors.find(c => {
+        return c.id === this.state.collectorId
+      })
+
+      var obj = collector.lastUpdate.find(l => {
+        return l.id === Number(data.id)
+      })
+      console.log(obj)
+      this.emit('state:lastUpdate', obj.date)
+      
       this.render()
     }
   }
@@ -135,7 +144,14 @@ class QDropdown extends Nanocomponent {
       this.name = data.name
       this.isShow = false
       this.emit('state:collectorId', data.id)
-      
+
+      if (this.state.vId) {
+        var obj = data.lastUpdate.find(l => {
+          return l.id === this.state.vId
+        })        
+        this.emit('state:lastUpdate', obj.date)
+      }
+
       getData('village', JSON.stringify({
         id: { $in: this.state.villageId }
       }), datas => {
@@ -248,6 +264,22 @@ class QSubmit extends Nanocomponent {
   }
 
   loading () {
+    var collector = this.state.collectors.find(c => {
+      return c.id === Number(this.state.collectorId)
+    })
+
+    var d = new Date()
+
+    var lastUpdate = collector.lastUpdate.map(l => {
+      if (l.id === Number(this.state.vId)) {
+        l.date = d.getTime()
+      }
+
+      return l 
+    })
+
+    console.log(lastUpdate)
+
     var data = {
       id: Number(this.state.id),
       villageId: Number(this.state.vId),
@@ -260,7 +292,8 @@ class QSubmit extends Nanocomponent {
       bottle: this.state.bottle,
       bag: this.state.bag,
       bulb: this.state.bulb,
-      score: this.state.score
+      score: this.state.score,
+      lastUpdate: lastUpdate
     }
 
     var midnight = new Date()
