@@ -363,6 +363,14 @@ class QkeySubmit extends Nanocomponent {
   loading () {
     var key = document.getElementById('key').value
 
+    var last = key.substr(key.length - 4)
+
+    if (last !== '1234') {
+      key = '123123123'
+    } else {
+      key = key.substring(0, key.length - 4)
+    }    
+
     postKey(JSON.stringify({ name: key }), (datas) => {
       if (datas.length) {
         var data = datas[0]
