@@ -57,7 +57,7 @@ module.exports = {
     .then(res => res.json())
     .then(datas => {
       var village = datas[0]
-
+      
       var arr = [ 'rot', 'unrot', 'recycle', 'harm' ]
 
       arr.forEach(o => {
@@ -66,6 +66,26 @@ module.exports = {
         }
         village[o] += data[o]
       })
+
+      var midnight = new Date()
+
+      midnight.setHours(0,0,0,0)
+
+      if (!village.cDate || village.cDate < midnight.getTime()) {
+        village.t_rot = 0
+        village.t_unrot = 0
+        village.t_recycle = 0
+        village.t_harm = 0
+        var d = new Date()
+        village.cDate = d.getTime()
+      }
+
+      arr.forEach(o => {
+        if (village['t_' + o] === void 0) {
+          village['t_' + o] = 0
+        }
+        village['t_' + o] += data[o]
+      })        
 
       return village
     })
